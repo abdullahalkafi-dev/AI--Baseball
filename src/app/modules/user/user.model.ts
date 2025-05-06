@@ -5,27 +5,12 @@ import config from "../../../config";
 import mongooseLeanVirtuals from "mongoose-lean-virtuals";
 const userSchema = new Schema<TUser, UserModal>(
   {
-    firstName: {
+    name: {
       type: String,
       required: true,
       trim: true,
-      minlength: [2, "First name must be at least 2 characters long"],
-      maxlength: [50, "First name can't be more than 50 characters"],
-      match: [
-        /^[a-zA-ZÀ-ÿ\u00f1\u00d1'-\s]+$/,
-        "First name contains invalid characters",
-      ],
-    },
-    lastName: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: [2, "Last name must be at least 2 characters long"],
-      maxlength: [50, "Last name can't be more than 50 characters"],
-      match: [
-        /^[a-zA-ZÀ-ÿ\u00f1\u00d1'-\s]+$/,
-        "Last name contains invalid characters",
-      ],
+      minlength: [2, "Name must be at least 2 characters long"],
+      maxlength: [100, "Name can't be more than 100 characters"],
     },
     email: {
       type: String,
@@ -53,42 +38,19 @@ const userSchema = new Schema<TUser, UserModal>(
       enum: ["ADMIN", "USER"],
       default: "USER",
     },
+    birthDate: {
+      type: Date,
+      required: true,
+    },
     address: {
-      type: [
-        {
-          title: {
-            type: String,
-            required: true,
-          },
-          street: {
-            type: String,
-            required: true,
-          },
-          apartmentNumber: {
-            type: String,
-            required: true,
-          },
-          city: {
-            type: String,
-            required: true,
-          },
-          state: {
-            type: String,
-            required: true,
-          },
-          postalCode: {
-            type: String,
-            required: true,
-          },
-        },
-      ],
-      default: [],
+      type: String,
+      required: true,
     },
     phoneNumber: {
       type: String,
+      required: true,
       unique: true,
       trim: true,
-      sparse: true, // This prevents duplicate "" or null errors
       validate: {
         validator: (value: string) => {
           const phoneRegex = /^\+?[1-9]\d{1,14}$/;
@@ -99,7 +61,7 @@ const userSchema = new Schema<TUser, UserModal>(
     },
     image: {
       type: String,
-      default: null,
+      default: "https://joura-pothole.s3.ap-south-1.amazonaws.com/Default_profile.jpg",
     },
     fcmToken: {
       type: String,
@@ -123,7 +85,6 @@ const userSchema = new Schema<TUser, UserModal>(
         type: String,
         default: null,
       },
-
       expireAt: {
         type: Date,
         default: null,
@@ -139,7 +100,6 @@ const userSchema = new Schema<TUser, UserModal>(
     toJSON: {
       virtuals: true,
       transform: (doc, ret) => {
-        // Remove the auto-generated id property
         delete ret.id;
         return ret;
       },
@@ -153,11 +113,7 @@ const userSchema = new Schema<TUser, UserModal>(
 userSchema.index({ status: 1 });
 // this for better index performance
 userSchema.index({ createdAt: -1 });
-// this for text search in names
-userSchema.index({ firstName: "text", lastName: "text" });
-userSchema.virtual("fullName").get(function () {
-  return `${this.firstName} ${this.lastName}`;
-});
+
 
 //exist user check
 userSchema.statics.isExistUserById = async (id: string) => {

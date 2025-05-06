@@ -5,19 +5,13 @@ export type TUser = {
   email: string;
   password: string;
   role: "ADMIN" | "USER";
-  phoneNumber?: string;
+  birthDate: Date;
   image?: string;
+  phoneNumber: string;
   status: "active" | "delete";
   verified?: boolean;
   fcmToken?: string;
-  address: {
-    title: string;
-    street: string;
-    apartmentNumber: string;
-    city: string;
-    state: string;
-    postalCode: string;
-  }[];
+  address: string;
   authentication?: {
     isResetPassword: boolean;
     oneTimeCode: string;
