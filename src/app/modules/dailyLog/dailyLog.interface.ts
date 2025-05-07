@@ -1,9 +1,11 @@
 import { Types } from "mongoose";
 
+
+
 export type TDailyLog = {
   userId: Types.ObjectId;
   date: Date;
-  visualization? : {
+  visualization?: {
     boxBreathing: boolean;
     boxBreathingTime: number;
     gameEnvironment: boolean;
@@ -75,4 +77,5 @@ export type TDailyLog = {
     gameResults?: string; // Optional for in-game results
     primaryTakeaway: string; // Most important learning from the day
   };
+  vector?:number[];
 };
