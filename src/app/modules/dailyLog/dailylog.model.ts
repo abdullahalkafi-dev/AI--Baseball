@@ -105,7 +105,7 @@ const dailyLogSchema = new Schema<TDailyLog, DailyLogModel>(
       exercisesLog: String,
     },
     Lifting: {
-      type: [
+      liftingType: [
         {
           type: String,
           enum: [

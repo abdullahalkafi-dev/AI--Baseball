@@ -1,5 +1,7 @@
 import { createClient, RedisClientType } from 'redis';
-
+import dotenv from 'dotenv';
+dotenv.config();
+console.log( process.env.REDIS_URL || `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`);
 class RedisClient {
   public client: RedisClientType;
 

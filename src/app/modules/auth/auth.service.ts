@@ -72,7 +72,7 @@ const forgetPasswordToDB = async (email: string) => {
   const value = {
     otp,
     email: isExistUser.email,
-    name: isExistUser.firstName!,
+    name: isExistUser.name!,
     theme: "theme-red" as
       | "theme-green"
       | "theme-red"

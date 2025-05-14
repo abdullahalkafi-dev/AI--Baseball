@@ -4,18 +4,23 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { DailyLogService } from "./dailyLog.service";
 import AppError from "../../errors/AppError";
+import { aiClient } from "../../../helpers/aiClient";
+import { endOfDay, startOfDay } from "../../../helpers/timeHelper";
 
 // Create a daily log
 const createDailyLog = catchAsync(async (req: Request, res: Response) => {
+  console.log("req.body", req.body);
+
   const result = await DailyLogService.createDailyLog(req.body);
   
   sendResponse(res, {
     success: true,
-    statusCode: StatusCodes.CREATED,
-    message: "Daily log created successfully",
+    statusCode: 200,
+    message: "Daily log added successfully",
     data: result,
   });
 });
+
 
 // Get all daily logs for a user
 const getDailyLogsByUser = catchAsync(async (req: Request, res: Response) => {
@@ -30,6 +35,40 @@ const getDailyLogsByUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// chat about daily log
+const chat=  catchAsync(async(req: Request, res: Response) => {
+  const { userId } = req.body;
+  const { message } = req.body;
+  const result = await aiClient.chat({
+    userId,
+    message,
+  })
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "Daily log retrieved successfully",
+    data: result.data,
+  });
+}
+);
+// const  with daily log
+const insights=  catchAsync(async(req: Request, res: Response) => {
+  const { userId } = req.body;
+  
+  const result = await aiClient.insights({
+    userId,
+    categories: ["visualization", "performance"],
+    startDate: startOfDay(new Date('2025-05-01')).toISOString(),
+    endDate: endOfDay(new Date('2025-05-31')).toISOString(),
+  })
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "insights retrieved successfully",
+    data: result.data,
+  });
+}
+);
 // Get daily log by ID
 const getDailyLogById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -98,4 +137,6 @@ export const DailyLogController = {
   getDailyLogByUserAndDate,
   updateDailyLog,
   deleteDailyLog,
+  chat,
+  insights
 };

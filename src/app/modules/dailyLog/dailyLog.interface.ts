@@ -77,5 +77,4 @@ export type TDailyLog = {
     gameResults?: string; // Optional for in-game results
     primaryTakeaway: string; // Most important learning from the day
   };
-  vector?:number[];
 };

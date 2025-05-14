@@ -6,40 +6,49 @@ import { startOfDay, endOfDay } from "../../../helpers/timeHelper";
 import { StatusCodes } from "http-status-codes";
 import DailyLogCacheManage from "./dailyLog.cacheManage";
 import { QueryBuilder } from "../../builder/QueryBuilder";
+import { aiClient } from "../../../helpers/aiClient";
 
 // Create daily log
 const createDailyLog = async (payload: TDailyLog): Promise<TDailyLog> => {
   const userId = new Types.ObjectId(payload.userId as unknown as string);
-  
+
   // Check if log already exists for this user on this date
   const dateStart = startOfDay(payload.date);
   const dateEnd = endOfDay(payload.date);
-  
+
   const existingLog = await DailyLog.findOne({
     userId,
     date: {
       $gte: dateStart,
-      $lte: dateEnd
-    }
+      $lte: dateEnd,
+    },
   });
-  
+
   if (existingLog) {
-    throw new AppError(
-      StatusCodes.CONFLICT,
-      "A log for this date already exists"
-    );
+    const result = await updateDailyLog(existingLog._id.toString(), payload);
+    // console.log(result);
+    await aiClient.embed(result);
+    return result;
   }
 
   // Create new daily log
   const result = await DailyLog.create(payload);
-  
+
   // Invalidate user's cache
   await DailyLogCacheManage.updateDailyLogByUserCache(userId.toString());
-  
+
   // Cache this new log
-  await DailyLogCacheManage.setCacheSingleDailyLog(result._id.toString(), result);
-  await DailyLogCacheManage.setCacheDailyLogByUserAndDate(userId.toString(), payload.date, result);
-  
+  await DailyLogCacheManage.setCacheSingleDailyLog(
+    result._id.toString(),
+    result
+  );
+  await DailyLogCacheManage.setCacheDailyLogByUserAndDate(
+    userId.toString(),
+    payload.date,
+    result
+  );
+  await aiClient.embed(result);
+
   return result;
 };
 
@@ -47,21 +56,21 @@ const createDailyLog = async (payload: TDailyLog): Promise<TDailyLog> => {
 const getDailyLogsByUser = async (
   userId: string,
   query: Record<string, unknown>
-): Promise<{ result: TDailyLog[], meta?: any }> => {
+): Promise<{ result: TDailyLog[]; meta?: any }> => {
   // Try to get from cache first
   const cached = await DailyLogCacheManage.getCacheListWithQuery({
     userId,
-    ...query
+    ...query,
   });
-  
+
   if (cached) return cached;
 
   const { startDate, endDate, ...filters } = query;
   const userObjectId = new Types.ObjectId(userId);
-  
+
   // Base query condition
   const queryOptions: any = { userId: userObjectId };
-  
+
   // Add date range filter if provided
   if (startDate || endDate) {
     const dateFilter: any = {};
@@ -73,24 +82,24 @@ const getDailyLogsByUser = async (
     }
     queryOptions.date = dateFilter;
   }
-  
+
   // Use QueryBuilder for better filtering, pagination, sorting
   const dailyLogQuery = new QueryBuilder(DailyLog.find(queryOptions), filters)
-    .search(['visualization.gameExecution', 'throwingJournal.focus', 'postPerformance.primaryTakeaway'])  
+    .search([])
     .filter()
-    .sort('date')
+    .sort("date")
     .paginate()
     .fields();
-  
+
   const result = await dailyLogQuery.modelQuery;
   const meta = await dailyLogQuery.countTotal();
-  
+
   // Cache the results
   await DailyLogCacheManage.setCacheListWithQuery(
     { userId, ...query },
     { result, meta }
   );
-  
+
   return { result, meta };
 };
 
@@ -99,17 +108,17 @@ const getDailyLogById = async (id: string): Promise<TDailyLog> => {
   // Try to get from cache first
   const cachedDailyLog = await DailyLogCacheManage.getCacheSingleDailyLog(id);
   if (cachedDailyLog) return cachedDailyLog;
-  
+
   // If not cached, query the database
   const dailyLog = await DailyLog.findById(id);
-  
+
   if (!dailyLog) {
     throw new AppError(StatusCodes.NOT_FOUND, "Daily log not found");
   }
-  
+
   // Cache the freshly retrieved data
   await DailyLogCacheManage.setCacheSingleDailyLog(id, dailyLog);
-  
+
   return dailyLog;
 };
 
@@ -119,32 +128,40 @@ const getDailyLogByUserAndDate = async (
   date: Date
 ): Promise<TDailyLog> => {
   // Try to get from cache first
-  const cachedDailyLog = await DailyLogCacheManage.getCacheDailyLogByUserAndDate(userId, date);
+  const cachedDailyLog =
+    await DailyLogCacheManage.getCacheDailyLogByUserAndDate(userId, date);
   if (cachedDailyLog) return cachedDailyLog;
-  
+
   const userObjectId = new Types.ObjectId(userId);
   const dateStart = startOfDay(date);
   const dateEnd = endOfDay(date);
-  
+
   const dailyLog = await DailyLog.findOne({
     userId: userObjectId,
     date: {
       $gte: dateStart,
-      $lte: dateEnd
-    }
+      $lte: dateEnd,
+    },
   });
-  
+
   if (!dailyLog) {
     throw new AppError(
       StatusCodes.NOT_FOUND,
       "No daily log found for this user on this date"
     );
   }
-  
+
   // Cache the result
-  await DailyLogCacheManage.setCacheDailyLogByUserAndDate(userId, date, dailyLog);
-  await DailyLogCacheManage.setCacheSingleDailyLog(dailyLog._id.toString(), dailyLog);
-  
+  await DailyLogCacheManage.setCacheDailyLogByUserAndDate(
+    userId,
+    date,
+    dailyLog
+  );
+  await DailyLogCacheManage.setCacheSingleDailyLog(
+    dailyLog._id.toString(),
+    dailyLog
+  );
+
   return dailyLog;
 };
 
@@ -155,29 +172,31 @@ const updateDailyLog = async (
 ): Promise<TDailyLog> => {
   // Check if log exists
   const dailyLog = await DailyLog.findById(id);
-  
+
   if (!dailyLog) {
     throw new AppError(StatusCodes.NOT_FOUND, "Daily log not found");
   }
-  
+
   // Don't allow updating userId or date
   if (payload.userId) delete payload.userId;
   if (payload.date) delete payload.date;
-  
+
   const result = await DailyLog.findByIdAndUpdate(
     id,
     { $set: payload },
     { new: true }
   );
-  
+
   if (!result) {
     throw new AppError(StatusCodes.NOT_FOUND, "Failed to update daily log");
   }
-  
+
   // Invalidate caches
   await DailyLogCacheManage.updateDailyLogCache(id);
-  await DailyLogCacheManage.updateDailyLogByUserCache(dailyLog.userId.toString());
-  
+  await DailyLogCacheManage.updateDailyLogByUserCache(
+    dailyLog.userId.toString()
+  );
+
   // Set new cache
   await DailyLogCacheManage.setCacheSingleDailyLog(id, result);
   await DailyLogCacheManage.setCacheDailyLogByUserAndDate(
@@ -185,30 +204,39 @@ const updateDailyLog = async (
     dailyLog.date,
     result
   );
-  
+
   return result;
 };
 
 // Delete daily log
 const deleteDailyLog = async (id: string): Promise<TDailyLog> => {
   const dailyLog = await DailyLog.findById(id);
-  
+
   if (!dailyLog) {
     throw new AppError(StatusCodes.NOT_FOUND, "Daily log not found");
   }
-  
+
   const result = await DailyLog.findByIdAndDelete(id);
-  
+
   if (!result) {
     throw new AppError(StatusCodes.NOT_FOUND, "Daily log not found");
   }
-  
+
   // Invalidate caches
   await DailyLogCacheManage.updateDailyLogCache(id);
-  await DailyLogCacheManage.updateDailyLogByUserCache(dailyLog.userId.toString());
-  
+  await DailyLogCacheManage.updateDailyLogByUserCache(
+    dailyLog.userId.toString()
+  );
+
   return result;
 };
+
+
+
+
+
+
+
 
 export const DailyLogService = {
   createDailyLog,

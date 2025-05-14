@@ -10,11 +10,12 @@ const auth =
   (...roles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const tokenWithBearer = req.headers.authorization;
-      if (!tokenWithBearer) {
-        throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized');
-      }
+      const tokenWithBearer = req.headers.authorization as string;
       console.log(tokenWithBearer);
+      if (!tokenWithBearer || !tokenWithBearer?.startsWith('Bearer')) {
+        return next( new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized'))
+      }
+
 
       if (tokenWithBearer && tokenWithBearer.startsWith('Bearer')) {
         const token = tokenWithBearer.split(' ')[1];
@@ -45,3 +46,5 @@ const auth =
   };
 
 export default auth;
+
+

@@ -51,13 +51,7 @@ const userSchema = new Schema<TUser, UserModal>(
       required: true,
       unique: true,
       trim: true,
-      validate: {
-        validator: (value: string) => {
-          const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-          return phoneRegex.test(value);
-        },
-        message: "Please provide a valid phone number",
-      },
+  
     },
     image: {
       type: String,
@@ -186,3 +180,5 @@ userSchema.pre("findOneAndUpdate", function (this: any, next) {
 userSchema.plugin(mongooseLeanVirtuals);
 
 export const User = model<TUser, UserModal>("User", userSchema, "users");
+
+

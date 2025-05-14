@@ -60,15 +60,15 @@ const DailyLogCacheManage = {
     await cacheService.setCache(key, data, DEFAULT_TTL);
   },
 
-  getCacheDailyLogByUserAndDate: async (userId: string, date: Date): Promise<TDailyLog | null> => {
-    const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  getCacheDailyLogByUserAndDate: async (userId: string, date: Date | string): Promise<TDailyLog | null> => {
+    const formattedDate = typeof date === 'string' ? date : date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const key = DailyLogCacheManage.keys.dailyLogByUserAndDate(userId, formattedDate);
     const cached = await cacheService.getCache<TDailyLog>(key);
     return cached ?? null;
   },
 
-  setCacheDailyLogByUserAndDate: async (userId: string, date: Date, data: TDailyLog) => {
-    const formattedDate = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+  setCacheDailyLogByUserAndDate: async (userId: string, date: Date | string, data: TDailyLog) => {
+    const formattedDate = typeof date === 'string' ? date : date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const key = DailyLogCacheManage.keys.dailyLogByUserAndDate(userId, formattedDate);
     await cacheService.setCache(key, data, DEFAULT_TTL);
   },

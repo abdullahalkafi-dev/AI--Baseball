@@ -30,8 +30,21 @@ app.use(cookieParser());
 //file retrieve
 app.use(express.static("uploads"));
 
+
 //router
 app.use("/api/v1", router);
+
+
+
+// // mount routes
+// app.use('/api/logs', logsRouter);
+// app.use('/api/chat', chatRouter);
+// app.use('/api/insights', insightsRouter);
+// app.use('/api/export', exportRouter);
+
+
+
+
 
 //live response
 app.get("/", (req: Request, res: Response) => {

@@ -13,11 +13,13 @@ router.post(
   validateRequest(DailyLogValidation.createDailyLog),
   DailyLogController.createDailyLog
 );
-
+router.post("/chat", DailyLogController.chat);
+//insights
+router.post("/insights", DailyLogController.insights);
 // Get all dailyLogs for a specific user
 router.get(
   '/user/:userId',
-  auth('USER', 'ADMIN'),
+  // auth('USER', 'ADMIN'),
   DailyLogController.getDailyLogsByUser
 );
 
