@@ -16,6 +16,8 @@ router.post(
 router.post("/chat", DailyLogController.chat);
 //insights
 router.post("/insights", DailyLogController.insights);
+// export csv
+router.post("/export-csv", DailyLogController.exportCsv);
 // Get all dailyLogs for a specific user
 router.get(
   '/user/:userId',

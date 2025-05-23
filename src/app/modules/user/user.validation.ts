@@ -14,12 +14,20 @@ const createUser = z.object({
         .min(6, "Password must be at least 6 characters long")
         .max(50, "Password can't be more than 50 characters")
         .trim(),
-      role: z.enum(["ADMIN", "USER"]).optional().default("USER"),
+      levelOfSport: z.string().trim(),
+      playerType: z.string().trim(),
+      ThreeWordThtDescribeYou: z.string(),
       birthDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
         message: "Invalid date format",
       }),
-      address: z.string(),
-      phoneNumber: z.string().trim(),
+      HowOftenDoYouJournal: z.enum([
+        "Never tried it",
+        "Dabbled a little",
+        "Pretty consistent",
+      ]),
+      role: z.enum(["ADMIN", "USER"]).optional().default("USER"),
+      address: z.string().optional(),
+      phoneNumber: z.string().trim().optional(),
       image: z.string().optional(),
       fcmToken: z.string().nullable().optional(),
       status: z.enum(["active", "delete"]).optional().default("active"),
@@ -29,7 +37,7 @@ const createUser = z.object({
 });
 
 const updateUser = z.object({
-  body: z
+  data: z
     .object({
       name: z
         .string()
@@ -37,16 +45,30 @@ const updateUser = z.object({
         .max(100, "Name can't be more than 100 characters")
         .trim()
         .optional(),
-      phoneNumber: z.string().trim().optional(),
-      birthDate: z
+      password: z
         .string()
-        .refine((val) => !isNaN(Date.parse(val)), {
-          message: "Invalid date format",
-        })
+        .min(6, "Password must be at least 6 characters long")
+        .max(50, "Password can't be more than 50 characters")
+        .trim()
         .optional(),
+      levelOfSport: z.string().trim().optional(),
+      playerType: z.string().trim().optional(),
+      ThreeWordThtDescribeYou: z.string().optional(),
+      birthDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
+        message: "Invalid date format",
+      }).optional(),
+      HowOftenDoYouJournal: z.enum([
+        "Never tried it",
+        "Dabbled a little",
+        "Pretty consistent",
+      ]).optional(),
+      role: z.enum(["ADMIN", "USER"]).optional(),
       address: z.string().optional(),
-      image: z.string().nullable().optional(),
+      phoneNumber: z.string().trim().optional(),
+      image: z.string().optional(),
       fcmToken: z.string().nullable().optional(),
+      status: z.enum(["active", "delete"]).optional(),
+      
     })
     .strict(),
 });

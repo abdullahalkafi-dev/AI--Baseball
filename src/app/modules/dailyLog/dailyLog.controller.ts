@@ -6,10 +6,11 @@ import { DailyLogService } from "./dailyLog.service";
 import AppError from "../../errors/AppError";
 import { aiClient } from "../../../helpers/aiClient";
 import { endOfDay, startOfDay } from "../../../helpers/timeHelper";
+import { User } from "../user/user.model";
 
 // Create a daily log
 const createDailyLog = catchAsync(async (req: Request, res: Response) => {
-  console.log("req.body", req.body);
+  // console.log("req.body", req.body);
 
   const result = await DailyLogService.createDailyLog(req.body);
   
@@ -53,13 +54,12 @@ const chat=  catchAsync(async(req: Request, res: Response) => {
 );
 // const  with daily log
 const insights=  catchAsync(async(req: Request, res: Response) => {
-  const { userId } = req.body;
-  
+  const { userId ,startDate,endDate} = req.body;
   const result = await aiClient.insights({
     userId,
-    categories: ["visualization", "performance"],
-    startDate: startOfDay(new Date('2025-05-01')).toISOString(),
-    endDate: endOfDay(new Date('2025-05-31')).toISOString(),
+    categories: ["visualization","Wellness","Recovery","Lifting","Consistency"],
+    startDate: startOfDay(startDate).toISOString(),
+    endDate: endOfDay(endDate).toISOString(),
   })
   sendResponse(res, {
     success: true,
@@ -130,6 +130,31 @@ const deleteDailyLog = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//export_csv
+ const  exportCsv = catchAsync(async (req: Request, res: Response) => {
+  const { userId ,startDate,endDate} = req.body;
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      "User not found"
+    );
+  }
+  
+  const result = await aiClient.exportCsv({
+    userId,
+    startDate: startOfDay(startDate).toISOString(),
+    endDate: endOfDay(endDate).toISOString(),
+  })
+  sendResponse(res, {
+    success: true,
+    statusCode: StatusCodes.OK,
+    message: "insights retrieved successfully",
+    data: result.data,
+  });
+}
+);
+
 export const DailyLogController = {
   createDailyLog,
   getDailyLogsByUser,
@@ -138,5 +163,6 @@ export const DailyLogController = {
   updateDailyLog,
   deleteDailyLog,
   chat,
-  insights
+  insights,
+  exportCsv
 };

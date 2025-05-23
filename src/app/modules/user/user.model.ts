@@ -33,6 +33,25 @@ const userSchema = new Schema<TUser, UserModal>(
       minlength: [6, "Password must be at least 6 characters long"],
       maxlength: [50, "Password can't be more than 50 characters"],
     },
+    levelOfSport: {
+      type: String,
+      enum: ["School", "College", "Professional", "Other"],
+      required: true,
+    },
+    playerType: {
+      type: String,
+      enum: ["Pitcher", "Position Player"],
+      required: true,
+    },
+    HowOftenDoYouJournal: {
+      type: String,
+      enum: ["Never tried it", "Dabbled a little", "Pretty consistent"],
+      required: true,
+    },
+    ThreeWordThtDescribeYou: {
+      type: String,
+      required: true,
+    },
     role: {
       type: String,
       enum: ["ADMIN", "USER"],
@@ -44,18 +63,15 @@ const userSchema = new Schema<TUser, UserModal>(
     },
     address: {
       type: String,
-      required: true,
     },
     phoneNumber: {
       type: String,
-      required: true,
-      unique: true,
       trim: true,
-  
     },
     image: {
       type: String,
-      default: "https://joura-pothole.s3.ap-south-1.amazonaws.com/Default_profile.jpg",
+      default:
+        "https://joura-pothole.s3.ap-south-1.amazonaws.com/Default_profile.jpg",
     },
     fcmToken: {
       type: String,
@@ -107,7 +123,6 @@ const userSchema = new Schema<TUser, UserModal>(
 userSchema.index({ status: 1 });
 // this for better index performance
 userSchema.index({ createdAt: -1 });
-
 
 //exist user check
 userSchema.statics.isExistUserById = async (id: string) => {
@@ -180,5 +195,3 @@ userSchema.pre("findOneAndUpdate", function (this: any, next) {
 userSchema.plugin(mongooseLeanVirtuals);
 
 export const User = model<TUser, UserModal>("User", userSchema, "users");
-
-

@@ -11,12 +11,19 @@ console.log(AI_URL, 'AI_URL');
 export 
 const aiClient = {
   embed: (log: TDailyLog): Promise<AxiosResponse> =>{
-    console.log(log);
-    return axios.post(`${AI_URL}/embed`, log);
+    return axios.post(`${AI_URL}/embed`, log, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
   }
 ,
-  chat: (data: { userId: string; message: string }): Promise<AxiosResponse<{ reply: string }>> =>
-    axios.post(`${AI_URL}/chat`, data),
+  chat: async(data: { userId: string; message: string }): Promise<AxiosResponse<{ reply: string }>> =>{
+        const res= await axios.post(`${AI_URL}/chat`, data)
+ console.log(res.data, "response");
+        return res;
+  }
+    ,
 
   insights: async (data: { userId: string; categories: string[]; startDate: string; endDate: string }): Promise<AxiosResponse<any>> => {
     console.log(  JSON.stringify(data),"data");
@@ -30,6 +37,17 @@ const aiClient = {
   },
   
 
-  exportCsv: (data: { userId: string; categories: string[]; start: string; end: string }): Promise<AxiosResponse<Blob>> =>
-    axios.post(`${AI_URL}/export_csv`, data, { responseType: 'blob' },),
+  exportCsv: async(data: { userId: string;  startDate: string; endDate: string }): Promise<AxiosResponse<Blob>> =>{
+
+    console.log(data, "data");
+    const res= await axios.post(`${AI_URL}/export_csv`, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    console.log(res.data, "response");
+    return res;
+
+  }
+   
 };

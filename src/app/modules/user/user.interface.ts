@@ -4,10 +4,14 @@ export type TUser = {
   name: string;
   email: string;
   password: string;
+  levelOfSport: "School" | "College" | "Professional" | "Other";
+  playerType: "Pitcher" | "Position Player";
+  HowOftenDoYouJournal: "Never tried it" | "Dabbled a little" | "Pretty consistent"
+  ThreeWordThtDescribeYou: string
   role: "ADMIN" | "USER";
   birthDate: Date;
   image?: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   status: "active" | "delete";
   verified?: boolean;
   fcmToken?: string;

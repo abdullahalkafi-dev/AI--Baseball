@@ -47,6 +47,7 @@ const updateUser = async (
   id: string,
   updateData: Partial<TReturnUser.updateUser>
 ): Promise<Partial<TReturnUser.updateUser>> => {
+  console.log("updated data",updateData);
   const user = await User.findByIdAndUpdate(id, updateData, {
     new: true,
   });
@@ -56,8 +57,7 @@ const updateUser = async (
   //remove cache
   await UserCacheManage.updateUserCache(id);
 
-  //set new cache
-  UserCacheManage.setCacheSingleUser(id, user);
+
   return user;
 };
 const updateUserByToken = async (
