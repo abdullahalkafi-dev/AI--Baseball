@@ -51,7 +51,16 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
 });
 const updateUserByToken = catchAsync(async (req: Request, res: Response) => {
   const id = req.user.id;
+  console.log(id);
   const data = JSON.parse(req.body.data);
+
+  const files: any = req.files;
+  console.log(files);
+  if (files?.image && files?.image.length > 0) {
+    const file = files.image[0];
+    data.image = file.path;
+  }
+
   const user = await UserServices.updateUser(id, data);
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -78,7 +87,17 @@ const updateUserActivationStatus = catchAsync(
     });
   }
 );
-
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.user, "get me user"
+  );
+  const user = await UserServices.getUserById(req.user.id);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "User retrieved successfully",
+    data: user,
+  });
+});
 const updateUserRole = catchAsync(async (req: Request, res: Response) => {
   const { role } = req.body;
   const user = await UserServices.updateUserRole(req.params.id, role);
@@ -97,4 +116,5 @@ export const UserController = {
   updateUserActivationStatus,
   updateUserRole,
   updateUserByToken,
+  getMe,
 };

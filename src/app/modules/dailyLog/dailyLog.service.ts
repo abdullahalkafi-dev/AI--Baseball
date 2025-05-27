@@ -11,7 +11,8 @@ import { aiClient } from "../../../helpers/aiClient";
 // Create daily log
 const createDailyLog = async (payload: TDailyLog): Promise<TDailyLog> => {
   const userId = new Types.ObjectId(payload.userId as unknown as string);
-
+  console.log(userId, "User Id");
+  //  console.log(payload,"Payload Date");
   // Check if log already exists for this user on this date
   const dateStart = startOfDay(payload.date);
   const dateEnd = endOfDay(payload.date);
@@ -23,17 +24,17 @@ const createDailyLog = async (payload: TDailyLog): Promise<TDailyLog> => {
       $lte: dateEnd,
     },
   });
-
   if (existingLog) {
     const result = await updateDailyLog(existingLog._id.toString(), payload);
     // console.log(result);
-    try{
-   const resFromAi= await aiClient.embed(result);
+    //! If you want to embed the updated log with AI, uncomment below
+      try{
+     const resFromAi= await aiClient.embed(result);
 
-    }catch
-    (e){
-     console.log(e);
-    }
+      }catch
+      (e){
+       console.log(e);
+      }
 
     return result;
   }
@@ -43,7 +44,6 @@ const createDailyLog = async (payload: TDailyLog): Promise<TDailyLog> => {
 
   // Invalidate user's cache
   await DailyLogCacheManage.updateDailyLogByUserCache(userId.toString());
-
 
   await DailyLogCacheManage.setCacheDailyLogByUserAndDate(
     userId.toString(),
@@ -189,7 +189,6 @@ const updateDailyLog = async (
     { $set: payload },
     { new: true }
   );
-
   if (!result) {
     throw new AppError(StatusCodes.NOT_FOUND, "Failed to update daily log");
   }
@@ -233,13 +232,6 @@ const deleteDailyLog = async (id: string): Promise<TDailyLog> => {
 
   return result;
 };
-
-
-
-
-
-
-
 
 export const DailyLogService = {
   createDailyLog,

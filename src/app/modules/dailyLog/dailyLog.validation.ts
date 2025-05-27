@@ -9,14 +9,14 @@ const createDailyLog = z.object({
       }),
       visualization: z
         .object({
-          boxBreathing: z.boolean(),
-          boxBreathingTime: z.number().min(0),
-          gameEnvironment: z.boolean(),
-          gameEnvironmentTime: z.number().min(0),
-          gameExecution: z.boolean(),
-          gameExecutionTime: z.number().min(0),
-          pregameRoutine: z.boolean(),
-          pregameRoutineTime: z.number().min(0),
+          boxBreathing: z.boolean().optional(),
+          boxBreathingTime: z.number().min(0).optional(),
+          gameEnvironment: z.boolean().optional(),
+          gameEnvironmentTime: z.number().min(0).optional(),
+          gameExecution: z.boolean().optional(),
+          gameExecutionTime: z.number().min(0).optional(),
+          pregameRoutine: z.boolean().optional(),
+          pregameRoutineTime: z.number().min(0).optional(),
         })
         .optional(),
       dailyWellnessQuestionnaire: z
@@ -74,7 +74,7 @@ const createDailyLog = z.object({
           focus: z.array(
             z.enum(["Speed", "Eccentric", "Isometric", "Concentric"])
           ),
-          exercisesLog: z.string(),
+          exercisesLog: z.string().optional(),
         })
         .optional(),
       hittingJournal: z
@@ -87,7 +87,7 @@ const createDailyLog = z.object({
           atBats: z.number().min(0),
           atBatResults: z.string(),
           positiveOutcome: z.string(),
-          exercisesLog: z.string(),
+          exercisesLog: z.string().optional(),
         })
         .optional(),
       postPerformance: z

@@ -36,13 +36,6 @@ app.use("/api/v1", router);
 
 
 
-// // mount routes
-// app.use('/api/logs', logsRouter);
-// app.use('/api/chat', chatRouter);
-// app.use('/api/insights', insightsRouter);
-// app.use('/api/export', exportRouter);
-
-
 
 
 

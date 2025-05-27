@@ -14,6 +14,10 @@ const superUser: TUser = {
   phoneNumber: 'N/A',
   birthDate: new Date('2000-01-01'),
   status: 'active',
+  levelOfSport: 'Professional',
+  playerType: 'Pitcher',
+  ThreeWordThtDescribeYou: 'Hardworking, Dedicated, Passionate',
+  HowOftenDoYouJournal: 'Pretty consistent',
 };
 
 const seedSuperAdmin = async () => {

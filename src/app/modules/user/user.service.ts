@@ -17,7 +17,7 @@ const getAllUsers = async (
   if (cached) return cached;
 
   const userQuery = new QueryBuilder(User.find(), query)
-    .search(["firstName", "lastName", "email"])
+    .search(["name", "email"])
     .filter()
     .sort()
     .paginate()

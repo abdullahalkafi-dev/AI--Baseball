@@ -3,6 +3,7 @@ import { UserController } from "./user.controller";
 import validateRequest from "../../middlewares/validateRequest";
 import { UserValidation } from "./user.validation";
 import fileUploadHandler from "../../middlewares/fileUploadHandler";
+import auth from "../../middlewares/auth";
 
 const router = express.Router();
 
@@ -13,9 +14,12 @@ router.post(
   UserController.createUser
 );
 router.get("/", UserController.getAllUsers);
+router.get("/getme",auth(), UserController.getMe);
+
 router.get("/:id", UserController.getUserById);
 router.patch(
   "/",
+  auth(),
   fileUploadHandler,
   validateRequest(UserValidation.updateUser),
   UserController.updateUserByToken
