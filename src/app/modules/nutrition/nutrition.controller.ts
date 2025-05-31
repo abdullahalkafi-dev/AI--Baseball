@@ -18,6 +18,7 @@ const createNutrition = catchAsync(async (req: Request, res: Response) => {
     // Assign the user ID from authenticated user
     nutritionData.user = req.user?.id;
 
+   console.log(nutritionData);    
     const newNutrition = await nutritionService.createNutrition(nutritionData);
 
     sendResponse(res, {

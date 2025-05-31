@@ -10,8 +10,8 @@ import { User } from "../user/user.model";
 
 // Create a daily log
 const createDailyLog = catchAsync(async (req: Request, res: Response) => {
-  // console.log("req.body", req.body);
-
+  console.log("req.body", req.body);
+ 
   const result = await DailyLogService.createDailyLog(req.body);
   
   sendResponse(res, {

@@ -90,6 +90,30 @@ const dailyLogSchema = new Schema<TDailyLog, DailyLogModel>(
         enum: ["Controlled", "InGame"],
       },
     },
+    nutrition: {
+      nutritionScore: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 10,
+      },
+      proteinInGram: {
+        type: Number,
+        required: true,
+        min: 0,
+      },
+      caloricScore: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 10,
+      },
+      consumedImpedingSubstances: {
+        type: Boolean,
+        required: true,
+        default: false,
+      },
+    },
     armCare: {
       focus: [
         {
@@ -123,7 +147,10 @@ const dailyLogSchema = new Schema<TDailyLog, DailyLogModel>(
           enum: ["Speed", "Eccentric", "Isometric", "Concentric"],
         },
       ],
-      exercisesLog: String,
+      exercisesLog: {
+        type: String,
+        default: "",
+      },
     },
     hittingJournal: {
       pregameEngagement: {

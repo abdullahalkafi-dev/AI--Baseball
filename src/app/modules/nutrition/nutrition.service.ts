@@ -1,6 +1,8 @@
 import { Nutrition } from "./nutrition.model";
 import { Types } from "mongoose";
 import { TNutrition } from "./nutrition.interface";
+import AppError from "../../errors/AppError";
+import { HttpStatusCode } from "axios";
 
 /**
  * Create a new nutrition entry
@@ -18,7 +20,7 @@ const createNutrition = async (
     nutritionData.date
   );
   if (isAlreadyExist) {
-    throw new Error("Nutrition entry for this date already exists");
+    throw new AppError(HttpStatusCode.BadRequest,"Nutrition entry for this date already exists");
   }
   const newNutrition = await Nutrition.create(nutritionData);
   return newNutrition;

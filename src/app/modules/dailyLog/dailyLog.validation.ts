@@ -74,7 +74,7 @@ const createDailyLog = z.object({
           focus: z.array(
             z.enum(["Speed", "Eccentric", "Isometric", "Concentric"])
           ),
-          exercisesLog: z.string().optional(),
+          exercisesLog: z.string().optional().nullable(),
         })
         .optional(),
       hittingJournal: z
@@ -87,15 +87,27 @@ const createDailyLog = z.object({
           atBats: z.number().min(0),
           atBatResults: z.string(),
           positiveOutcome: z.string(),
-          exercisesLog: z.string().optional(),
+          exercisesLog: z.string().optional().nullable(),
         })
         .optional(),
+
       postPerformance: z
         .object({
           gameRating: z.number().min(1).max(10, "Scale must be between 1-10"),
           sessionType: z.enum(["Bullpen/Live at-bats", "In game"]),
           gameResults: z.string(),
           primaryTakeaway: z.string(),
+        })
+        .optional(),
+      nutrition: z
+        .object({
+          nutritionScore: z
+            .number()
+            .min(0)
+            .max(10, "Scale must be between 0-10"),
+          proteinInGram: z.number().min(0, "Protein must be a positive value"),
+          caloricScore: z.number().min(0).max(10, "Scale must be between 0-10"),
+          consumedImpedingSubstances: z.boolean(),
         })
         .optional(),
     })
@@ -217,6 +229,26 @@ const updateDailyLog = z.object({
           sessionType: z.enum(["Bullpen/Live at-bats", "In game"]).optional(),
           gameResults: z.string().optional(),
           primaryTakeaway: z.string().optional(),
+        })
+        .optional(),
+
+      nutrition: z
+        .object({
+          nutritionScore: z
+            .number()
+            .min(0)
+            .max(10, "Scale must be between 0-10")
+            .optional(),
+          proteinInGram: z
+            .number()
+            .min(0, "Protein must be a positive value")
+            .optional(),
+          caloricScore: z
+            .number()
+            .min(0)
+            .max(10, "Scale must be between 0-10")
+            .optional(),
+          consumedImpedingSubstances: z.boolean().optional(),
         })
         .optional(),
     })

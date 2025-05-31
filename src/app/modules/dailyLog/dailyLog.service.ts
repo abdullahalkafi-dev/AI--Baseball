@@ -27,18 +27,24 @@ const createDailyLog = async (payload: TDailyLog): Promise<TDailyLog> => {
   if (existingLog) {
     const result = await updateDailyLog(existingLog._id.toString(), payload);
     // console.log(result);
-    //! If you want to embed the updated log with AI, uncomment below
-      try{
-     const resFromAi= await aiClient.embed(result);
 
-      }catch
-      (e){
-       console.log(e);
-      }
+    //! If you want to embed the updated log with AI, uncomment below
+    try {
+   await aiClient.embed(result);
+     //update cache
+      await DailyLogCacheManage.updateDailyLogCache(
+        existingLog._id.toString()
+      );
+      await DailyLogCacheManage.updateDailyLogByUserCache(
+        userId.toString()
+      );
+    } catch (e) {
+      console.log(e);
+    }
 
     return result;
   }
-
+  console.log(payload);
   // Create new daily log
   const result = await DailyLog.create(payload);
 

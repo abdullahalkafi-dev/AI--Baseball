@@ -1,7 +1,5 @@
 import { Types } from "mongoose";
 
-
-
 export type TDailyLog = {
   userId: Types.ObjectId;
   date: Date;
@@ -32,6 +30,13 @@ export type TDailyLog = {
     focus: string;
     environment: "Controlled" | "InGame";
   };
+  nutrition: {
+    nutritionScore: number;
+    proteinInGram: number;
+    caloricScore: number;
+    consumedImpedingSubstances: boolean;
+  };
+
   armCare?: {
     focus: ("Scapular" | "Shoulder" | "Forearms" | "Biceps/Triceps")[];
     exerciseType: "Isometric" | "Eccentric" | "Oscillating";
