@@ -30,14 +30,10 @@ const createDailyLog = async (payload: TDailyLog): Promise<TDailyLog> => {
 
     //! If you want to embed the updated log with AI, uncomment below
     try {
-   await aiClient.embed(result);
-     //update cache
-      await DailyLogCacheManage.updateDailyLogCache(
-        existingLog._id.toString()
-      );
-      await DailyLogCacheManage.updateDailyLogByUserCache(
-        userId.toString()
-      );
+      await aiClient.embed(result);
+      //update cache
+      await DailyLogCacheManage.updateDailyLogCache(existingLog._id.toString());
+      await DailyLogCacheManage.updateDailyLogByUserCache(userId.toString());
     } catch (e) {
       console.log(e);
     }
@@ -137,9 +133,9 @@ const getDailyLogByUserAndDate = async (
   date: Date
 ): Promise<TDailyLog> => {
   // Try to get from cache first
-  const cachedDailyLog =
-    await DailyLogCacheManage.getCacheDailyLogByUserAndDate(userId, date);
-  if (cachedDailyLog) return cachedDailyLog;
+  // const cachedDailyLog =
+  // await DailyLogCacheManage.getCacheDailyLogByUserAndDate(userId, date);
+  // if (cachedDailyLog) return cachedDailyLog;
 
   const userObjectId = new Types.ObjectId(userId);
   const dateStart = startOfDay(date);
@@ -203,14 +199,6 @@ const updateDailyLog = async (
   await DailyLogCacheManage.updateDailyLogCache(id);
   await DailyLogCacheManage.updateDailyLogByUserCache(
     dailyLog.userId.toString()
-  );
-
-  // Set new cache
-  await DailyLogCacheManage.setCacheSingleDailyLog(id, result);
-  await DailyLogCacheManage.setCacheDailyLogByUserAndDate(
-    dailyLog.userId.toString(),
-    dailyLog.date,
-    result
   );
 
   return result;

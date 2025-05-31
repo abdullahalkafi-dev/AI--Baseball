@@ -93,24 +93,20 @@ const dailyLogSchema = new Schema<TDailyLog, DailyLogModel>(
     nutrition: {
       nutritionScore: {
         type: Number,
-        required: true,
         min: 0,
         max: 10,
       },
       proteinInGram: {
         type: Number,
-        required: true,
         min: 0,
       },
       caloricScore: {
         type: Number,
-        required: true,
         min: 0,
         max: 10,
       },
       consumedImpedingSubstances: {
         type: Boolean,
-        required: true,
         default: false,
       },
     },
