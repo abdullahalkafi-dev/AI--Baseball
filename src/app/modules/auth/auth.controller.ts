@@ -4,6 +4,7 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { AuthService } from "./auth.service";
 import config from "../../../config";
+import AppError from "../../errors/AppError";
 
 const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   const { ...verifyData } = req.body;
@@ -48,7 +49,18 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
 });
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
-  const token = req.headers.authorization;
+  const tokenWithBearer = req.headers.authorization as string;
+  console.log(tokenWithBearer);
+  if (!tokenWithBearer || !tokenWithBearer?.startsWith("Bearer")) {
+    throw new AppError(StatusCodes.UNAUTHORIZED, "You are not authorized");
+  }
+
+  let token: string | undefined;
+  if (tokenWithBearer && tokenWithBearer.startsWith("Bearer")) {
+    token = tokenWithBearer.split(" ")[1];
+    console.log(token);
+  }
+
   const { ...resetData } = req.body;
   const result = await AuthService.resetPasswordToDB(token!, resetData);
 
