@@ -10,7 +10,8 @@ import { User } from "../user/user.model";
 import fs from "fs";
 import path from "path";
 import config from "../../../config";
-
+import { parse } from "csv-parse/sync"; // `npm install csv-parse`
+import { stringify } from "csv-stringify/sync"; // `npm install csv-stringify`
 // Create a daily log
 const createDailyLog = catchAsync(async (req: Request, res: Response) => {
   console.log("req.body", req.body);
@@ -40,44 +41,69 @@ const getDailyLogsByUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 // chat about daily log
-const chat=  catchAsync(async(req: Request, res: Response) => {
-  const { userId } = req.body;
-  const { message } = req.body;
-  const result = await aiClient.chat({
-    userId,
-    message,
-  })
-  
-  if(result.data.tag && result.data.tag === "csv_download") {
-    // Generate filename with userId-dd-mm-yyyy-random6digit format
+const chat = catchAsync(async (req: Request, res: Response) => {
+  const { userId, message } = req.body;
+
+  const result = await aiClient.chat({ userId, message });
+
+  if (result.data.tag === "csv_download") {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const year = today.getFullYear();
     const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
     const filename = `${userId}-${day}-${month}-${year}-${randomCode}.csv`;
-    
-    // Create CSV file path
+
     const csvDir = path.join(process.cwd(), 'uploads', 'csv');
     const filePath = path.join(csvDir, filename);
-    
-    // Ensure CSV directory exists
+
     if (!fs.existsSync(csvDir)) {
       fs.mkdirSync(csvDir, { recursive: true });
     }
-    
-    // Write CSV content to file
-    fs.writeFileSync(filePath, result.data.reply);
-    
-    // Generate URL
-    const baseUrl = `https://9a19-115-127-156-9.ngrok-free.app`;
-    // const baseUrl = `http://localhost:${config.port || 5005}`;
+
+    // Parse the reply assuming it's raw CSV with JSON fields
+    let originalCsv = result.data.reply;
+
+    try {
+      const records = parse(originalCsv, {
+        columns: true,
+        skip_empty_lines: true,
+      });
+
+      const flattenedRecords = records.map((row: Record<string, any>) => {
+        const flatRow: Record<string, any> = {};
+        for (const [key, value] of Object.entries(row)) {
+          try {
+            const parsedValue = JSON.parse(value);
+            if (typeof parsedValue === 'object' && !Array.isArray(parsedValue)) {
+              for (const [innerKey, innerValue] of Object.entries(parsedValue)) {
+                flatRow[`${key}.${innerKey}`] = innerValue;
+              }
+            } else {
+              flatRow[key] = parsedValue;
+            }
+          } catch {
+            flatRow[key] = value;
+          }
+        }
+        return flatRow;
+      });
+
+      const finalCsv = stringify(flattenedRecords, {
+        header: true,
+      });
+
+      fs.writeFileSync(filePath, finalCsv);
+    } catch (e) {
+      // Fallback: Write as-is if anything fails
+      fs.writeFileSync(filePath, originalCsv);
+    }
+
+    const baseUrl = `https://3f11-115-127-156-9.ngrok-free.app`;
     const fileUrl = `${baseUrl}/csv/${filename}`;
-    
-    // Update result data reply with the URL
     result.data.reply = fileUrl;
   }
-  
+
   console.log(result);
   sendResponse(res, {
     success: true,
@@ -85,8 +111,7 @@ const chat=  catchAsync(async(req: Request, res: Response) => {
     message: "Daily log retrieved successfully",
     data: result.data,
   });
-}
-);
+});
 // const  with daily log
 const insights=  catchAsync(async(req: Request, res: Response) => {
   const { userId ,startDate,endDate} = req.body;

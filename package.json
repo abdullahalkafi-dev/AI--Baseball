@@ -6,6 +6,8 @@
 		"colors": "^1.4.0",
 		"cookie-parser": "^1.4.7",
 		"cors": "^2.8.5",
+		"csv-parse": "^5.6.0",
+		"csv-stringify": "^6.5.2",
 		"dotenv": "^16.4.7",
 		"express": "^5.1.0",
 		"http-status-codes": "^2.3.0",
