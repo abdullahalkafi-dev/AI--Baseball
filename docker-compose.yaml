@@ -25,37 +25,34 @@
 
 # docker-compose.yml
 services:
-  redis-gudbaseball:
-    image: redis:7
-    container_name: redis-gudbaseball
-    ports:
-      - "6380:6379"
-    networks:
-      - gudbaseball-network
-
-  gudbaseball-backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5005:5005"
-    env_file:
-      - .env
-    volumes:
-      - gudbaseball-logs:/app/winston
-      - /app/node_modules
-      - .:/app
-    depends_on:
-      - redis-gudbaseball
-    networks:
-      - gudbaseball-network
-    environment:
-      - AI_SERVICE_URL=http://172.17.0.1:8001  # Docker default gateway
-      - REDIS_URL=redis://redis-gudbaseball:6379
-
+ redis-gudbaseball:
+   image: redis:7
+   container_name: redis-gudbaseball
+   ports:
+     - "6380:6379"
+   networks:
+     - gudbaseball-network
+ gudbaseball-backend:
+   build:
+     context: .
+     dockerfile: Dockerfile
+   ports:
+     - "5005:5005"
+   env_file:
+     - .env
+   volumes:
+     - gudbaseball-logs:/app/winston
+     - /app/node_modules
+     - .:/app
+   depends_on:
+     - redis-gudbaseball
+   networks:
+     - gudbaseball-network
+   environment:
+     - AI_SERVICE_URL=http://host.docker.internal:8001
+     - REDIS_URL=redis://redis-gudbaseball:6379
 networks:
-  gudbaseball-network:
-    driver: bridge
-
+ gudbaseball-network:
+   driver: bridge
 volumes:
-  gudbaseball-logs:
+ gudbaseball-logs:
