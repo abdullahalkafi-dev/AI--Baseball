@@ -30,8 +30,6 @@ services:
     container_name: redis-gudbaseball
     ports:
       - "6380:6379"
-    networks:
-      - gudbaseball-network
 
   gudbaseball-backend:
     build:
@@ -47,16 +45,8 @@ services:
       - .:/app
     depends_on:
       - redis-gudbaseball
-    networks:
-      - gudbaseball-network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"  # This allows access to host
-    environment:
-      - AI_SERVICE_URL=http://host.docker.internal:8001
-
-networks:
-  gudbaseball-network:
-    driver: bridge
+    # Add this to allow container to reach host services
+    network_mode: "host"
 
 volumes:
   gudbaseball-logs:
