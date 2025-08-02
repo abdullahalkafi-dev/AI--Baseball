@@ -12,13 +12,16 @@ export const aiClient = {
       headers: {
         "Content-Type": "application/json",
       },
+      timeout: 25000, // 25 seconds
     });
   },
   chat: async (data: {
     userId: string;
     message: string;
   }): Promise<AxiosResponse<{ reply: string,tag:string }>> => {
-    const res = await axios.post(`${AI_URL}/chat`, data);
+    const res = await axios.post(`${AI_URL}/chat`, data, {
+      timeout: 25000, // 25 seconds
+    });
     console.log(res.data, "response");
     return res;
   },
@@ -33,6 +36,7 @@ export const aiClient = {
       headers: {
         "Content-Type": "application/json",
       },
+      timeout: 25000, // 25 seconds
     });
     console.log(response.data, "response");
     return response;
@@ -44,11 +48,13 @@ export const aiClient = {
     endDate: string;
   }) => {
     const result = axios
-      .get(`${AI_URL}/export_csv`)
-      .then((response) => {
+      .get(`${AI_URL}/export_csv`, {
+        timeout: 25000, // 25 seconds
+      })
+      .then((response: any) => {
         console.log(response.data, "response");
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error("Error fetching export_csv:", error);
         throw error;
       });
