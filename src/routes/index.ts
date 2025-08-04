@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import { UserRoutes } from "../app/modules/user/user.route";
 import { AuthRoutes } from "../app/modules/auth/auth.route";
 import { DailyLogRoutes } from "../app/modules/dailyLog/dailyLog.route";
+import { SettingRoutes } from "../app/modules/settings/setting.route";
 
 const router: Router = express.Router();
 
@@ -17,6 +18,10 @@ const apiRoutes = [
   {
     path: "/daily-logs",
     route: DailyLogRoutes,
+  },
+  {
+    path: "/setting",
+    route: SettingRoutes,
   },
   
 ];
