@@ -232,7 +232,7 @@ const deleteDailyLog = catchAsync(async (req: Request, res: Response) => {
     startDate: startOfDay(startDate).toISOString(),
     endDate: endOfDay(endDate).toISOString(),
   })
-  console.log(result);
+  // console.log(result);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,

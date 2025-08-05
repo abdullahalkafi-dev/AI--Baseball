@@ -4,7 +4,6 @@ import { TDailyLog } from "../app/modules/dailyLog/dailyLog.interface";
 import config from "../config";
 
 const AI_URL = config.ai.ai_url || "http://localhost:8000";
-console.log(AI_URL, "AI_URL");
 
 export const aiClient = {
   embed: (log: TDailyLog): Promise<AxiosResponse> => {
@@ -32,14 +31,12 @@ export const aiClient = {
     startDate: string;
     endDate: string;
   }): Promise<AxiosResponse<any>> => {
-    console.log(JSON.stringify(data), "data");
     const response = await axios.post(`${AI_URL}/insights`, data, {
       headers: {
         "Content-Type": "application/json",
       },
       timeout: 25000, // 25 seconds
     });
-    console.log(response.data, "response");
     return response;
   },
 
