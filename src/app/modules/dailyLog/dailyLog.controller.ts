@@ -105,7 +105,7 @@ const chat = catchAsync(async (req: Request, res: Response) => {
     result.data.reply = fileUrl;
   }
 
-  console.log(result);
+  // console.log(result);
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
