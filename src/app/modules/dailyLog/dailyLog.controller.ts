@@ -45,7 +45,7 @@ const chat = catchAsync(async (req: Request, res: Response) => {
   const { userId, message } = req.body;
 
   const result = await aiClient.chat({ userId, message });
-  
+  console.log(result.data.reply);
   if (result.data.tag === "csv_download") {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
