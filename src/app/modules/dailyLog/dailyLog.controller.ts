@@ -15,9 +15,9 @@ import { stringify } from "csv-stringify/sync"; // `npm install csv-stringify`
 // Create a daily log
 const createDailyLog = catchAsync(async (req: Request, res: Response) => {
   console.log("req.body", req.body);
- 
+
   const result = await DailyLogService.createDailyLog(req.body);
-  
+
   sendResponse(res, {
     success: true,
     statusCode: 200,
@@ -26,12 +26,11 @@ const createDailyLog = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 // Get all daily logs for a user
 const getDailyLogsByUser = catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.params;
   const result = await DailyLogService.getDailyLogsByUser(userId, req.query);
-  
+
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -48,13 +47,13 @@ const chat = catchAsync(async (req: Request, res: Response) => {
   console.log(result.data.reply);
   if (result.data.tag === "csv_download") {
     const today = new Date();
-    const day = String(today.getDate()).padStart(2, '0');
-    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
     const year = today.getFullYear();
     const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
     const filename = `${userId}-${day}-${month}-${year}-${randomCode}.csv`;
 
-    const csvDir = path.join(process.cwd(), 'uploads', 'csv');
+    const csvDir = path.join(process.cwd(), "uploads", "csv");
     const filePath = path.join(csvDir, filename);
 
     if (!fs.existsSync(csvDir)) {
@@ -75,8 +74,13 @@ const chat = catchAsync(async (req: Request, res: Response) => {
         for (const [key, value] of Object.entries(row)) {
           try {
             const parsedValue = JSON.parse(value);
-            if (typeof parsedValue === 'object' && !Array.isArray(parsedValue)) {
-              for (const [innerKey, innerValue] of Object.entries(parsedValue)) {
+            if (
+              typeof parsedValue === "object" &&
+              !Array.isArray(parsedValue)
+            ) {
+              for (const [innerKey, innerValue] of Object.entries(
+                parsedValue
+              )) {
                 flatRow[`${key}.${innerKey}`] = innerValue;
               }
             } else {
@@ -92,28 +96,23 @@ const chat = catchAsync(async (req: Request, res: Response) => {
       const finalCsv = stringify(flattenedRecords, {
         header: true,
       });
-     
-      if(!finalCsv || finalCsv.trim() === '') {
+
+      if (!finalCsv || finalCsv.trim() === "") {
         throw new Error("CSV conversion failed");
+      } 
+      console.log(originalCsv, "originalCsv");
+
+      if (
+        originalCsv.trim() ===
+        "date,visualization,dailyWellnessQuestionnaire,throwingJournal,armCare,Lifting,hittingJournal,postPerformance,nutrition"
+      ) {
+        sendResponse(res, {
+          success: true,
+          statusCode: StatusCodes.OK,
+          message: "Daily log retrieved successfully",
+          data: "No data available",
+        });
       }
-    console.log(`
-      l
-      final csv
-      ${finalCsv}
-      
-      
-l      
-      `
-    );
-    console.log(`
-      l
-      originalCsv 
-      ${originalCsv}
-      
-      
-l      
-      `
-    );
 
       fs.writeFileSync(filePath, finalCsv);
     } catch (e) {
@@ -135,27 +134,32 @@ l
   });
 });
 // const  with daily log
-const insights=  catchAsync(async(req: Request, res: Response) => {
-  const { userId ,startDate,endDate} = req.body;
+const insights = catchAsync(async (req: Request, res: Response) => {
+  const { userId, startDate, endDate } = req.body;
   const result = await aiClient.insights({
     userId,
-    categories: ["visualization","Wellness","Recovery","Lifting","Consistency"],
+    categories: [
+      "visualization",
+      "Wellness",
+      "Recovery",
+      "Lifting",
+      "Consistency",
+    ],
     startDate: startOfDay(startDate).toISOString(),
     endDate: endOfDay(endDate).toISOString(),
-  })
+  });
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
     message: "insights retrieved successfully",
     data: result.data,
   });
-}
-);
+});
 // Get daily log by ID
 const getDailyLogById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await DailyLogService.getDailyLogById(id);
-  
+
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -165,32 +169,34 @@ const getDailyLogById = catchAsync(async (req: Request, res: Response) => {
 });
 
 // Get daily log by user and date
-const getDailyLogByUserAndDate = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  const { date } = req.query;
-  
-  if (!date) {
- throw new AppError(
-      StatusCodes.BAD_REQUEST,
-        "Date is required"
+const getDailyLogByUserAndDate = catchAsync(
+  async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const { date } = req.query;
+
+    if (!date) {
+      throw new AppError(StatusCodes.BAD_REQUEST, "Date is required");
+    }
+
+    const result = await DailyLogService.getDailyLogByUserAndDate(
+      userId,
+      new Date(date as string)
     );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: StatusCodes.OK,
+      message: "Daily log retrieved successfully",
+      data: result,
+    });
   }
-  
-  const result = await DailyLogService.getDailyLogByUserAndDate(userId, new Date(date as string));
-  
-  sendResponse(res, {
-    success: true,
-    statusCode: StatusCodes.OK,
-    message: "Daily log retrieved successfully",
-    data: result,
-  });
-});
+);
 
 // Update daily log
 const updateDailyLog = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await DailyLogService.updateDailyLog(id, req.body);
-  
+
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -203,7 +209,7 @@ const updateDailyLog = catchAsync(async (req: Request, res: Response) => {
 const deleteDailyLog = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const result = await DailyLogService.deleteDailyLog(id);
-  
+
   sendResponse(res, {
     success: true,
     statusCode: StatusCodes.OK,
@@ -222,7 +228,7 @@ const deleteDailyLog = catchAsync(async (req: Request, res: Response) => {
 //       "User not found"
 //     );
 //   }
-  
+
 //   const result = await aiClient.exportCsv({
 //     userId,
 //     startDate: startOfDay(startDate).toISOString(),
@@ -238,21 +244,18 @@ const deleteDailyLog = catchAsync(async (req: Request, res: Response) => {
 // }
 // );
 //export_csv
- const  exportCsv = catchAsync(async (req: Request, res: Response) => {
-  const { userId ,startDate,endDate} = req.body;
+const exportCsv = catchAsync(async (req: Request, res: Response) => {
+  const { userId, startDate, endDate } = req.body;
   const user = await User.findById(userId);
   if (!user) {
-    throw new AppError(
-      StatusCodes.NOT_FOUND,
-      "User not found"
-    );
+    throw new AppError(StatusCodes.NOT_FOUND, "User not found");
   }
-  
+
   const result = await aiClient.exportCsv({
     userId,
     startDate: startOfDay(startDate).toISOString(),
     endDate: endOfDay(endDate).toISOString(),
-  })
+  });
   // console.log(result);
   sendResponse(res, {
     success: true,
@@ -260,8 +263,7 @@ const deleteDailyLog = catchAsync(async (req: Request, res: Response) => {
     message: "insights retrieved successfully",
     data: result,
   });
-}
-);
+});
 
 export const DailyLogController = {
   createDailyLog,
@@ -272,5 +274,5 @@ export const DailyLogController = {
   deleteDailyLog,
   chat,
   insights,
-  exportCsv
+  exportCsv,
 };
