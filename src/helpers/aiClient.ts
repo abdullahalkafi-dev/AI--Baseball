@@ -15,7 +15,8 @@ export const aiClient = {
       timeout: 25000, // 25 seconds
     });
   },
-  chat: async (data: {
+  chat
+  : async (data: {
     userId: string;
     message: string;
   }): Promise<AxiosResponse<{ reply: string,tag:string }>> => {
@@ -23,7 +24,6 @@ export const aiClient = {
     const res = await axios.post(`${AI_URL}/chat`, data, {
       timeout: 25000, // 25 seconds
     });
-    console.log(res.data, "response");
     return res;
   },
   insights: async (data: {
