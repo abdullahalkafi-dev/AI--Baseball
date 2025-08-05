@@ -96,7 +96,24 @@ const chat = catchAsync(async (req: Request, res: Response) => {
       if(!finalCsv || finalCsv.trim() === '') {
         throw new Error("CSV conversion failed");
       }
-
+    console.log(`
+      l
+      final csv
+      ${finalCsv}
+      
+      
+l      
+      `
+    );
+    console.log(`
+      l
+      originalCsv 
+      ${originalCsv}
+      
+      
+l      
+      `
+    );
 
       fs.writeFileSync(filePath, finalCsv);
     } catch (e) {
