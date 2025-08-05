@@ -92,7 +92,11 @@ const chat = catchAsync(async (req: Request, res: Response) => {
       const finalCsv = stringify(flattenedRecords, {
         header: true,
       });
-      console.log(finalCsv);
+     
+      if(!finalCsv || finalCsv.trim() === '') {
+        throw new Error("CSV conversion failed");
+      }
+
 
       fs.writeFileSync(filePath, finalCsv);
     } catch (e) {
