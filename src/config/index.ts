@@ -6,6 +6,7 @@ export default {
   ip_address: process.env.IP_ADDRESS,
   database_url: process.env.DATABASE_URL,
   node_env: process.env.NODE_ENV,
+  BACKEND_URL: process.env.BACKEND_URL,
   port: process.env.PORT,
   bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
   stripe_secret_key: process.env.STRIPE_SECRET_KEY,

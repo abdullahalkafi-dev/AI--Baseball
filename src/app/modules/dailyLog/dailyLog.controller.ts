@@ -99,7 +99,7 @@ const chat = catchAsync(async (req: Request, res: Response) => {
       fs.writeFileSync(filePath, originalCsv);
     }
 
-    const baseUrl = `https://3f11-115-127-156-9.ngrok-free.app`;
+    const baseUrl = `${config.BACKEND_URL}`;
     const fileUrl = `${baseUrl}/csv/${filename}`;
     result.data.reply = fileUrl;
   }
