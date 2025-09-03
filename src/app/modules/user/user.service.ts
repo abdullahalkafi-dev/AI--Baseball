@@ -23,7 +23,7 @@ const getAllUsers = async (
     .paginate()
     .fields();
   const result = await userQuery.modelQuery;
-  console.log(result);
+
   const meta = await userQuery.countTotal();
   await UserCacheManage.setCacheListWithQuery(query, { result, meta });
   return { result, meta };
@@ -47,7 +47,7 @@ const updateUser = async (
   id: string,
   updateData: Partial<TReturnUser.updateUser>
 ): Promise<Partial<TReturnUser.updateUser>> => {
-  console.log("updated data",updateData);
+
   const user = await User.findByIdAndUpdate(id, updateData, {
     new: true,
   });
@@ -81,8 +81,7 @@ const updateUserActivationStatus = async (
   id: string,
   status: "active" | "delete"
 ): Promise<TReturnUser.updateUserActivationStatus> => {
-  console.log(status);
-  console.log(id);
+  
 
   const user = await User.findByIdAndUpdate(
     id,

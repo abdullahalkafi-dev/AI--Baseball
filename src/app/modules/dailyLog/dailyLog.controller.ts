@@ -14,7 +14,7 @@ import { parse } from "csv-parse/sync"; // `npm install csv-parse`
 import { stringify } from "csv-stringify/sync"; // `npm install csv-stringify`
 // Create a daily log
 const createDailyLog = catchAsync(async (req: Request, res: Response) => {
-  console.log("req.body", req.body);
+ 
 
   const result = await DailyLogService.createDailyLog(req.body);
 
@@ -44,7 +44,7 @@ const chat = catchAsync(async (req: Request, res: Response) => {
   const { userId, message } = req.body;
 
   const result = await aiClient.chat({ userId, message });
-  console.log(result.data.reply);
+ 
   if (result.data.tag === "csv_download") {
     const today = new Date();
     const day = String(today.getDate()).padStart(2, "0");
@@ -100,7 +100,7 @@ const chat = catchAsync(async (req: Request, res: Response) => {
       if (!finalCsv || finalCsv.trim() === "") {
         throw new Error("CSV conversion failed");
       } 
-      console.log(originalCsv, "originalCsv");
+   
 
       if (
         originalCsv.trim() ===

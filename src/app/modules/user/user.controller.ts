@@ -5,7 +5,7 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.body);
+  
   const user = await UserServices.createUser(req.body);
   sendResponse(res, {
     statusCode: StatusCodes.CREATED,
@@ -36,7 +36,6 @@ const getUserById = catchAsync(async (req: Request, res: Response) => {
 const updateUser = catchAsync(async (req: Request, res: Response) => {
   const data = JSON.parse(req.body.data);
   const files: any = req.files;
-  console.log(files);
   if (files?.image && files?.image.length > 0) {
     const file = files.image[0];
     data.image = file.path;
@@ -51,11 +50,11 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
 });
 const updateUserByToken = catchAsync(async (req: Request, res: Response) => {
   const id = req.user.id;
-  console.log(id);
+
   const data = JSON.parse(req.body.data);
 
   const files: any = req.files;
-  console.log(files);
+  
   if (files?.image && files?.image.length > 0) {
     const file = files.image[0];
     data.image = file.path;
@@ -88,8 +87,7 @@ const updateUserActivationStatus = catchAsync(
   }
 );
 const getMe = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.user, "get me user"
-  );
+ 
   const user = await UserServices.getUserById(req.user.id);
   sendResponse(res, {
     statusCode: StatusCodes.OK,

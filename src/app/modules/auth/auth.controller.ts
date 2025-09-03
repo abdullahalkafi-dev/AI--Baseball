@@ -50,7 +50,6 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const tokenWithBearer = req.headers.authorization as string;
-  console.log(tokenWithBearer);
   if (!tokenWithBearer || !tokenWithBearer?.startsWith("Bearer")) {
     throw new AppError(StatusCodes.UNAUTHORIZED, "You are not authorized");
   }
@@ -58,7 +57,6 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   let token: string | undefined;
   if (tokenWithBearer && tokenWithBearer.startsWith("Bearer")) {
     token = tokenWithBearer.split(" ")[1];
-    console.log(token);
   }
 
   const { ...resetData } = req.body;

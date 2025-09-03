@@ -19,7 +19,6 @@ export const aiClient = {
     userId: string;
     message: string;
   }): Promise<AxiosResponse<{ reply: string,tag:string }>> => {
-    console.log(`${AI_URL}/chat`, "AI_URL");
     const res = await axios.post(`${AI_URL}/chat`, data, {
       timeout: 25000, // 25 seconds
     });
@@ -50,7 +49,6 @@ export const aiClient = {
         timeout: 25000, // 25 seconds
       })
       .then((response: any) => {
-        console.log(response.data, "response");
       })
       .catch((error: any) => {
         console.error("Error fetching export_csv:", error);
@@ -58,18 +56,5 @@ export const aiClient = {
       });
     return result;
   },
-  // },  exportCsv: async (data: {
-  //   userId: string;
-  //   startDate: string;
-  //   endDate: string;
-  // }): Promise<AxiosResponse<Blob>> => {
-  //   console.log(data, "data");
-  //   const res = await axios.post(`${AI_URL}/export_csv`, data, {
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-  //   console.log(res.data, "response");
-  //   return res;
-  // },
+
 };

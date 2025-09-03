@@ -11,7 +11,7 @@ const auth =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const tokenWithBearer = req.headers.authorization as string;
-      console.log(tokenWithBearer);
+     
       if (!tokenWithBearer || !tokenWithBearer?.startsWith('Bearer')) {
         return next( new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized'))
       }
@@ -19,7 +19,6 @@ const auth =
 
       if (tokenWithBearer && tokenWithBearer.startsWith('Bearer')) {
         const token = tokenWithBearer.split(' ')[1];
- console.log(token);
         //verify token
         const verifyUser = jwtHelper.verifyToken(
           token,
@@ -27,7 +26,6 @@ const auth =
         );
         //set user to header
         req.user = verifyUser;
-        console.log(req.user);
          
          
         //guard user
